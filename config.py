@@ -1,12 +1,27 @@
 # config.py
 import os
+import secrets
+import warnings
 from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
+def _get_secret_key():
+    key = os.environ.get('SECRET_KEY')
+    if key:
+        return key
+    warnings.warn(
+        'SECRET_KEY não definida no ambiente. Usando uma chave aleatória gerada '
+        'a cada início do servidor (isso invalida sessões/cookies a cada reinício). '
+        'Defina a variável de ambiente SECRET_KEY antes de rodar em produção.',
+        RuntimeWarning
+    )
+    return secrets.token_hex(32)
+
+
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'chave-super-secreta-do-controle-de-veiculos'
+    SECRET_KEY = _get_secret_key()
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'app.db')  # ESTA LINHA É CRÍTICA
     SQLALCHEMY_TRACK_MODIFICATIONS = False
