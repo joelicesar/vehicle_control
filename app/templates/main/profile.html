@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>    {# app/templates/main/profile.html #}
+    {% extends "base.html" %}
+
+    {% block content %}
+        <h1>Perfil de {{ user.username }}</h1>
+        <p>Email: {{ user.email }}</p>
+        <p>Tipo de Usuário: {{ user.type }}</p>
+        {# Adicione mais detalhes do perfil aqui se houver #}
+        <a href="{{ url_for('main.index') }}" class="btn btn-secondary">Voltar</a>
+    {% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

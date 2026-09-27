@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Detalhes da Viagem #{{ trip.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Detalhes da Viagem #{{ trip.id }}</h2>
+        <a href="{{ url_for('trips.history') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar para o Histórico
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Informações da Viagem</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Veículo:</strong> {{ trip.vehicle.plate }} - {{ trip.vehicle.model }}</p>
+                    <p><strong>Motorista:</strong> {{ trip.driver.name }}</p>
+                    <p><strong>Departamento:</strong> {{ trip.department.name }}</p>
+                    <p><strong>Status:</strong>
+                        {% if trip.status == 'in_progress' %}
+                            <span class="badge bg-warning">Em Andamento</span>
+                        {% elif trip.status == 'completed' %}
+                            <span class="badge bg-success">Concluída</span>
+                        {% elif trip.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelada</span>
+                        {% endif %}
+                    </p>
+                    <p><strong>Finalidade:</strong> {{ trip.purpose or 'Não informada' }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Saída:</strong> {{ trip.start_datetime.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>KM Inicial:</strong> {{ trip.start_km }} km</p>
+                    {% if trip.end_datetime %}
+                    <p><strong>Chegada:</strong> {{ trip.end_datetime.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>KM Final:</strong> {{ trip.end_km }} km</p>
+                    <p><strong>Distância Percorrida:</strong> {{ trip.distance|round(1) }} km</p>
+                    <p><strong>Valor da Cobrança:</strong> R$ {{ trip.charge_amount|round(2) }}</p>
+                    {% else %}
+                    <p><strong>Chegada:</strong> Ainda em andamento</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Condição do Veículo e Observações</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Condição na Saída:</strong> {{ trip.vehicle_condition or 'Não informada' }}</p>
+            <p><strong>Observações na Saída:</strong> {{ trip.start_notes or 'Nenhuma' }}</p>
+            {% if trip.end_notes %}
+            <p><strong>Observações na Chegada:</strong> {{ trip.end_notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if trip.status == 'in_progress' %}
+    <div class="text-end">
+        <a href="{{ url_for('trips.end_trip', trip_id=trip.id) }}" class="btn btn-success btn-lg">
+            <i class="bi bi-box-arrow-in-left"></i> Registrar Chegada
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

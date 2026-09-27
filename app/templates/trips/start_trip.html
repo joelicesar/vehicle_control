@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Registrar Saída de Veículo{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Registrar Saída de Veículo</h2>
+        <a href="{{ url_for('trips.dashboard') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar para o Dashboard
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Dados da Saída</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('trips.start_trip') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    <label for="vehicle_id" class="form-label">Veículo:</label>
+                    {{ form.vehicle_id(class="form-select", id="vehicle_id") }}
+                    {% if form.vehicle_id.errors %}
+                        <div class="text-danger">
+                            {% for error in form.vehicle_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="driver_id" class="form-label">Motorista:</label>
+                    {{ form.driver_id(class="form-select", id="driver_id") }}
+                    {% if form.driver_id.errors %}
+                        <div class="text-danger">
+                            {% for error in form.driver_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="department_id" class="form-label">Departamento:</label>
+                    {{ form.department_id(class="form-select", id="department_id") }}
+                    {% if form.department_id.errors %}
+                        <div class="text-danger">
+                            {% for error in form.department_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="start_km" class="form-label">Quilometragem de Saída:</label>
+                    {{ form.start_km(class="form-control", id="start_km") }}
+                    {% if form.start_km.errors %}
+                        <div class="text-danger">
+                            {% for error in form.start_km.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="vehicle_condition" class="form-label">Estado do Veículo (opcional):</label>
+                    {{ form.vehicle_condition(class="form-control", id="vehicle_condition", rows="3") }}
+                    {% if form.vehicle_condition.errors %}
+                        <div class="text-danger">
+                            {% for error in form.vehicle_condition.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="start_notes" class="form-label">Observações (opcional):</label>
+                    {{ form.start_notes(class="form-control", id="start_notes", rows="3") }}
+                    {% if form.start_notes.errors %}
+                        <div class="text-danger">
+                            {% for error in form.start_notes.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('trips.dashboard') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Detalhes do Agendamento #{{ schedule.id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Detalhes do Agendamento #{{ schedule.id }}</h2>
+        <a href="{{ url_for('schedules.calendar') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar para o Calendário
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Informações do Agendamento</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Veículo:</strong> {{ schedule.vehicle.plate }} - {{ schedule.vehicle.model }}</p>
+                    <p><strong>Motorista:</strong> {{ schedule.driver.name }}</p>
+                    <p><strong>Departamento:</strong> {{ schedule.department.name }}</p>
+                    <p><strong>Status:</strong> 
+                        {% if schedule.status == 'scheduled' %}
+                            <span class="badge bg-info">Agendado</span>
+                        {% elif schedule.status == 'confirmed' %}
+                            <span class="badge bg-success">Confirmado</span>
+                        {% elif schedule.status == 'cancelled' %}
+                            <span class="badge bg-danger">Cancelado</span>
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Início:</strong> {{ schedule.start_datetime.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Término Previsto:</strong> {{ schedule.end_datetime.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Finalidade:</strong> {{ schedule.purpose or 'Não informada' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end">
+        {% if schedule.status in ['scheduled', 'confirmed'] and current_user.type == 'warehouse' %}
+            <a href="{{ url_for('schedules.edit_schedule', schedule_id=schedule.id) }}" class="btn btn-warning me-2">
+                <i class="bi bi-pencil"></i> Editar Agendamento
+            </a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#cancelScheduleModal{{ schedule.id }}">
+                <i class="bi bi-x-circle"></i> Cancelar Agendamento
+            </button>
+        {% endif %}
+    </div>
+
+    <!-- Modal de confirmação de cancelamento (repetido para consistência, pode ser um include) -->
+    <div class="modal fade" id="cancelScheduleModal{{ schedule.id }}" tabindex="-1" aria-labelledby="cancelScheduleModalLabel{{ schedule.id }}" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="cancelScheduleModalLabel{{ schedule.id }}">Confirmar Cancelamento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja cancelar o agendamento do veículo <strong>{{ schedule.vehicle.plate }}</strong> para <strong>{{ schedule.driver.name }}</strong>?</p>
+                    <p class="text-danger"><small>Esta ação não pode ser desfeita.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+                    <form action="{{ url_for('schedules.cancel_schedule', schedule_id=schedule.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Cancelar Agendamento</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

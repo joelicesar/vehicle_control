@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Página Não Encontrada{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-1 text-warning">404</h1>
+    <h2 class="mb-4">Página Não Encontrada</h2>
+    <p class="lead">A página que você está procurando não existe ou foi movida.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-house"></i> Voltar para a Página Inicial
+    </a>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

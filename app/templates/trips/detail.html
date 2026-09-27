@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Detalhes da Viagem #{{ trip.id }}</h2>
+        <div>
+            <a href="{{ url_for('trips.history') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para o Histórico
+            </a>
+            {% if trip.status == 'in_progress' and current_user.type == 'warehouse' %}
+            <a href="{{ url_for('trips.end_trip', trip_id=trip.id) }}" class="btn btn-success ms-2">
+                <i class="bi bi-box-arrow-in-left"></i> Registrar Chegada
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Informações da Viagem</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Status:</h6>
+                        {% if trip.status == 'completed' %}
+                            <span class="badge bg-success badge-status">Concluída</span>
+                        {% else %}
+                            <span class="badge bg-warning badge-status">Em andamento</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Veículo:</h6>
+                            <p>{{ trip.vehicle.plate }} - {{ trip.vehicle.model }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Motorista:</h6>
+                            <p>{{ trip.driver.name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6>Departamento:</h6>
+                        <p>{{ trip.department.name }} ({{ trip.department.cost_center }})</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Métricas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Distância:</h6>
+                            <p>{{ format_distance(trip.distance) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Valor:</h6>
+                            <p>{{ trip.charge_amount|currency }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Duração:</h6>
+                            {% if trip.end_datetime %}
+                                {% set duration = (trip.end_datetime - trip.start_datetime).total_seconds() // 60 %}
+                                <p>
+                                    {% if duration < 60 %}
+                                        {{ duration|int }} minutos
+                                    {% else %}
+                                        {{ (duration // 60)|int }} horas e {{ (duration % 60)|int }} minutos
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                {% set duration = (now - trip.start_datetime).total_seconds() // 60 %}
+                                <p>
+                                    {% if duration < 60 %}
+                                        {{ duration|int }} minutos (em andamento)
+                                    {% else %}
+                                        {{ (duration // 60)|int }} horas e {{ (duration % 60)|int }} minutos (em andamento)
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Dados de Saída</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Data/Hora:</h6>
+                            <p>{{ trip.start_datetime|datetime }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Quilometragem:</h6>
+                            <p>{{ format_distance(trip.start_km) }}</p>
+                        </div>
+                    </div>
+
+                    {% if trip.vehicle_condition %}
+                    <div class="mb-3">
+                        <h6>Estado do Veículo:</h6>
+                        <p>{{ trip.vehicle_condition }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if trip.start_notes %}
+                    <div class="mb-3">
+                        <h6>Observações:</h6>
+                        <p>{{ trip.start_notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header {% if trip.end_datetime %}bg-success{% else %}bg-secondary{% endif %} text-white">
+                    <h5 class="mb-0">Dados de Chegada</h5>
+                </div>
+                <div class="card-body">
+                    {% if trip.end_datetime %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Data/Hora:</h6>
+                            <p>{{ trip.end_datetime|datetime }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Quilometragem:</h6>
+                            <p>{{ format_distance(trip.end_km) }}</p>
+                        </div>
+                    </div>
+
+                    {% if trip.end_notes %}
+                    <div class="mb-3">
+                        <h6>Observações:</h6>
+                        <p>{{ trip.end_notes }}</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-center py-3">
+                        <i class="bi bi-clock"></i> Viagem em andamento. Aguardando registro de chegada.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

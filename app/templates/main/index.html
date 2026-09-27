@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Início{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-4">Bem-vindo ao Sistema de Controle de Veículos!</h1>
+    <p class="lead">Redirecionando para o seu dashboard...</p>
+    <p>Se o redirecionamento não ocorrer, clique no link abaixo:</p>
+    {% if current_user.is_authenticated %}
+        {% if current_user.type == 'warehouse' %}
+            <a href="{{ url_for('trips.dashboard') }}" class="btn btn-primary btn-lg">Ir para o Dashboard do Almoxarifado</a>
+        {% elif current_user.type == 'manager' %}
+            <a href="{{ url_for('reports.dashboard') }}" class="btn btn-primary btn-lg">Ir para o Dashboard do Gestor</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Fazer Login</a>
+        {% endif %}
+    {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Fazer Login</a>
+    {% endif %}
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

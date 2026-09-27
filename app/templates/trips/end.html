@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Registrar Chegada de Veículo</h2>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Informações da Viagem</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Veículo:</strong> {{ trip.vehicle.plate }} - {{ trip.vehicle.model }}</p>
+                    <p><strong>Motorista:</strong> {{ trip.driver.name }}</p>
+                    <p><strong>Departamento:</strong> {{ trip.department.name }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Data/Hora de Saída:</strong> {{ trip.start_datetime.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Quilometragem de Saída:</strong> {{ trip.start_km }}</p>
+                </div>
+            </div>
+
+            {% if trip.start_notes %}
+            <div class="mt-3">
+                <h6>Observações de Saída:</h6>
+                <p>{{ trip.start_notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Registro de Chegada</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="end_km" class="form-label">Quilometragem de Chegada:</label>
+                    {{ form.end_km(class="form-control", id="end_km") }}
+                    {% if form.end_km.errors %}
+                        <div class="text-danger">
+                            {% for error in form.end_km.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <div class="form-text">
+                        A quilometragem de chegada deve ser maior que a de saída ({{ trip.start_km }}).
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="end_notes" class="form-label">Observações:</label>
+                    {{ form.end_notes(class="form-control", rows=3, id="end_notes") }}
+                </div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('trips.active') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+            {{ form.submit(class="btn btn-success") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

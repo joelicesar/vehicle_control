@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ title }}</h1>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Filtros</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" action="{{ url_for('reports.department_summary') }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Data Inicial</label>
+                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">Data Final</label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cards de Departamentos -->
+    <div class="row">
+        {% for dept in departments_stats %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">{{ dept.name }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if dept.description %}
+                    <p class="text-muted">{{ dept.description }}</p>
+                    <hr>
+                    {% endif %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="mb-0">{{ dept.trips_count }}</h3>
+                                    <small class="text-muted">Viagens</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="mb-0">{{ "%.1f"|format(dept.total_distance) }}</h3>
+                                    <small class="text-muted">Km Total</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h3 class="mb-0">R$ {{ "%.2f"|format(dept.total_amount) }}</h3>
+                                    <small class="text-muted">Valor Total</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2">Motoristas Mais Utilizados</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for driver in dept.top_drivers %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ driver[0] }}
+                                    <span class="badge bg-primary rounded-pill">{{ driver[1] }} viagens</span>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item text-muted">Nenhum motorista utilizado</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2">Veículos Mais Utilizados</h6>
+                            <ul class="list-group list-group-flush">
+                                {% for vehicle in dept.top_vehicles %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ vehicle[0] }}
+                                    <span class="badge bg-primary rounded-pill">{{ vehicle[1] }} viagens</span>
+                                </li>
+                                {% else %}
+                                <li class="list-group-item text-muted">Nenhum veículo utilizado</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('reports.billing', department_id=dept.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Ver Relatório de Cobrança
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>Nenhum departamento encontrado.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

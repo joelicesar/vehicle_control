@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>    {% extends "base.html" %}
+
+    {% block title %}{{ title }}{% endblock %}
+
+    {% block content %}
+    <div class="container">
+        <h2 class="mb-4">{{ title }}</h2>
+        <div class="alert alert-info" role="alert">
+            Bem-vindo ao seu dashboard padrão!
+            <p>Seu tipo de usuário não possui um dashboard específico configurado.</p>
+        </div>
+        <p>Você pode explorar outras seções da aplicação através do menu de navegação.</p>
+    </div>
+    {% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

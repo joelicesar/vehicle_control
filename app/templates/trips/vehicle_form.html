@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">{% if form.plate.data %}Editar{% else %}Adicionar{% endif %} Veículo</h2>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Informações do Veículo</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="plate" class="form-label">Placa:</label>
+                        {{ form.plate(class="form-control", id="plate") }}
+                        {% if form.plate.errors %}
+                            <div class="text-danger">
+                                {% for error in form.plate.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="model" class="form-label">Modelo:</label>
+                        {{ form.model(class="form-control", id="model") }}
+                        {% if form.model.errors %}
+                            <div class="text-danger">
+                                {% for error in form.model.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="year" class="form-label">Ano:</label>
+                        {{ form.year(class="form-control", id="year") }}
+                        {% if form.year.errors %}
+                            <div class="text-danger">
+                                {% for error in form.year.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="current_km" class="form-label">Quilometragem Atual:</label>
+                        {{ form.current_km(class="form-control", id="current_km") }}
+                        {% if form.current_km.errors %}
+                            <div class="text-danger">
+                                {% for error in form.current_km.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('trips.vehicles') }}" class="btn btn-secondary">Cancelar</a>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

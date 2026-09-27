@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Resumo Mensal</h2>
+        <div>
+            <a href="{{ url_for('reports.dashboard') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar para o Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Gráfico de valor por mês -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Valor Total por Mês</h5>
+        </div>
+        <div class="card-body">
+            {% if plot_url %}
+            <img src="data:image/png;base64,{{ plot_url }}" class="img-fluid" alt="Gráfico de valor por mês">
+            {% else %}
+            <p class="text-center py-3">Não há dados suficientes para gerar o gráfico.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabela de estatísticas por mês -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Estatísticas por Mês</h5>
+        </div>
+        <div class="card-body">
+            {% if monthly_stats %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mês</th>
+                            <th>Total de Viagens</th>
+                            <th>Total KM</th>
+                            <th>Valor Total (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month in monthly_stats %}
+                        <tr>
+                            <td>{{ month.month }}</td>
+                            <td class="text-center">{{ month.trip_count }}</td>
+                            <td class="text-end">{{ month.total_km|round(1) if month.total_km else 0 }}</td>
+                            <td class="text-end">R$ {{ month.total_amount|round(2) if month.total_amount else 0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center py-3">Não há dados disponíveis.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

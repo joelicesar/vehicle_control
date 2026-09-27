@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Criar Agendamento</h2>
+
+    {% if conflicts %}
+    <div class="alert alert-danger">
+        <h5><i class="bi bi-exclamation-triangle"></i> Conflitos de Horário Detectados</h5>
+        <p>O veículo selecionado já está agendado nos seguintes horários:</p>
+        <ul>
+            {% for conflict in conflicts %}
+            <li>
+                <strong>{{ conflict.start_datetime.strftime('%d/%m/%Y %H:%M') }} - {{ conflict.end_datetime.strftime('%H:%M') }}</strong>
+                ({{ conflict.driver.name }} - {{ conflict.department.name }})
+            </li>
+            {% endfor %}
+        </ul>
+        <p>Por favor, escolha outro horário ou outro veículo.</p>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Informações do Agendamento</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="vehicle_id" class="form-label">Veículo:</label>
+                        {{ form.vehicle_id(class="form-select", id="vehicle_id") }}
+                        {% if form.vehicle_id.errors %}
+                            <div class="text-danger">
+                                {% for error in form.vehicle_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="driver_id" class="form-label">Motorista:</label>
+                        {{ form.driver_id(class="form-select", id="driver_id") }}
+                        {% if form.driver_id.errors %}
+                            <div class="text-danger">
+                                {% for error in form.driver_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="department_id" class="form-label">Departamento:</label>
+                    {{ form.department_id(class="form-select", id="department_id") }}
+                    {% if form.department_id.errors %}
+                        <div class="text-danger">
+                            {% for error in form.department_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="start_datetime" class="form-label">Data/Hora de Início:</label>
+                        {{ form.start_datetime(class="form-control datetime-picker", id="start_datetime") }}
+                        {% if form.start_datetime.errors %}
+                            <div class="text-danger">
+                                {% for error in form.start_datetime.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="end_datetime" class="form-label">Data/Hora de Término Previsto:</label>
+                        {{ form.end_datetime(class="form-control datetime-picker", id="end_datetime") }}
+                        {% if form.end_datetime.errors %}
+                            <div class="text-danger">
+                                {% for error in form.end_datetime.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="purpose" class="form-label">Finalidade da Viagem:</label>
+                    {{ form.purpose(class="form-control", rows=3, id="purpose") }}
+                    {% if form.purpose.errors %}
+                        <div class="text-danger">
+                            {% for error in form.purpose.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="button" id="check-availability" class="btn btn-info">
+                <i class="bi bi-calendar-check"></i> Verificar Disponibilidade
+            </button>
+
+            <div>
+                <a href="{{ url_for('schedules.index') }}" class="btn btn-secondary me-2">Cancelar</a>
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal de disponibilidade -->
+    <div class="modal fade" id="availabilityModal" tabindex="-1" aria-labelledby="availabilityModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="availabilityModalLabel">Verificação de Disponibilidade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body" id="availability-result">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Carregando...</span>
+                        </div>
+                        <p>Verificando disponibilidade...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar seletores de data/hora
+        flatpickr(".datetime-picker", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            locale: "pt",
+            minuteIncrement: 15
+        });
+
+        // Verificar parâmetros da URL para pré-preencher datas
+        const urlParams = new URLSearchParams(window.location.search);
+        const startParam = urlParams.get('start');
+        const endParam = urlParams.get('end');
+
+        if (startParam) {
+            document.getElementById('start_datetime').value = startParam.substring(0, 16);
+        }
+
+        if (endParam) {
+            document.getElementById('end_datetime').value = endParam.substring(0, 16);
+        }
+
+        // Verificar disponibilidade
+        document.getElementById('check-availability').addEventListener('click', function() {
+            const vehicleId = document.getElementById('vehicle_id').value;
+            const startDatetime = document.getElementById('start_datetime').value;
+            const endDatetime = document.getElementById('end_datetime').value;
+
+            if (!vehicleId || !startDatetime || !endDatetime) {
+                alert('Por favor, preencha o veículo e os horários de início e término.');
+                return;
+            }
+
+            // Mostrar modal
+            var modal = new bootstrap.Modal(document.getElementById('availabilityModal'));
+            modal.show();
+
+            // Fazer requisição para verificar disponibilidade
+            fetch(`{{ url_for('schedules.check_availability') }}?vehicle_id=${vehicleId}&start_date=${startDatetime}&end_date=${endDatetime}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+
+                    if (data.available) {
+                        html = `
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle-fill"></i> O veículo está disponível no período selecionado!
+                            </div>
+                        `;
+                    } else {
+                        html = `
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle-fill"></i> O veículo não está disponível no período selecionado.
+                            </div>
+                            <h6>Conflitos encontrados:</h6>
+                            <ul class="list-group">
+                        `;
+
+                        data.conflicts.forEach(conflict => {
+                            const start = new Date(conflict.start).toLocaleString('pt-BR');
+                            const end = new Date(conflict.end).toLocaleString('pt-BR');
+                            html += `
+                                <li class="list-group-item">
+                                    <strong>${start} - ${end}</strong><br>
+                                    Motorista: ${conflict.driver}<br>
+                                    Departamento: ${conflict.department}
+                                </li>
+                            `;
+                        });
+
+                        html += '</ul>';
+                    }
+
+                    document.getElementById('availability-result').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('availability-result').innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-circle-fill"></i> Erro ao verificar disponibilidade.
+                        </div>
+                    `;
+                    console.error('Erro:', error);
+                });
+        });
+    });
+</script>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

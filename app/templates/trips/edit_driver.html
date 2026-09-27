@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Editar Motorista</h2>
+        <a href="{{ url_for('trips.drivers') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Dados do Motorista</h5>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('trips.edit_driver', driver_id=driver.id) }}">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nome Completo:</label>
+                    {{ form.name(class="form-control", id="name") }}
+                    {% if form.name.errors %}
+                        <div class="text-danger">
+                            {% for error in form.name.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="department_id" class="form-label">Departamento:</label>
+                    {{ form.department_id(class="form-select", id="department_id") }}
+                    {% if form.department_id.errors %}
+                        <div class="text-danger">
+                            {% for error in form.department_id.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="license_number" class="form-label">Número da CNH:</label>
+                    {{ form.license_number(class="form-control", id="license_number") }}
+                    {% if form.license_number.errors %}
+                        <div class="text-danger">
+                            {% for error in form.license_number.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="license_expiry" class="form-label">Validade da CNH:</label>
+                    {{ form.license_expiry(class="form-control", id="license_expiry", type="date") }}
+                    {% if form.license_expiry.errors %}
+                        <div class="text-danger">
+                            {% for error in form.license_expiry.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('trips.drivers') }}" class="btn btn-secondary me-md-2">Cancelar</a>
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

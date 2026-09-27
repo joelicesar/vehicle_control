@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{# app/templates/reports/billing_form.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Relatório de Cobrança</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('reports.billing') }}">
+                        {{ form.hidden_tag() }} {# Campo CSRF token #}
+
+                        <div class="mb-3">
+                            {{ form.department_id.label(class="form-label") }}
+                            {{ form.department_id(class="form-select") }}
+                            {% for error in form.department_id.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.start_date.label(class="form-label") }}
+                            {{ form.start_date(class="form-control", type="date") }} {# type="date" para um seletor de data HTML5 #}
+                            {% for error in form.start_date.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.end_date.label(class="form-label") }}
+                            {{ form.end_date(class="form-control", type="date") }} {# type="date" para um seletor de data HTML5 #}
+                            {% for error in form.end_date.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.output_format.label(class="form-label") }}
+                            {# CORREÇÃO AQUI: Renderizando o campo output_format corretamente #}
+                            {{ form.output_format(class="form-select", id="output_format") }}
+                            {% for error in form.output_format.errors %}
+                                <span class="text-danger">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>{{ title }}</h1>
+
+        <div class="btn-group">
+            <a href="{{ url_for('reports.billing') }}" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-file-invoice-dollar me-2"></i>Relatório de Cobrança
+            </a>
+            <a href="{{ url_for('reports.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-chart-line me-2"></i>Dashboard
+            </a>
+            <!-- Botões para rotas em desenvolvimento - comentados para evitar erros -->
+            <!--
+            <a href="{{ url_for('reports.vehicle_usage') }}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-car me-2"></i>Uso de Veículos
+            </a>
+            <a href="{{ url_for('reports.department_summary') }}" class="btn btn-sm btn-outline-info">
+                <i class="fas fa-building me-2"></i>Resumo por Departamento
+            </a>
+            -->
+        </div>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row">
+        <!-- Veículos -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-car me-2"></i>Veículos</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text display-4">{{ total_vehicles }}</p>
+                    <p class="text-muted">Disponíveis: {{ available_vehicles }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Motoristas -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i>Motoristas</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text display-4">{{ total_drivers }}</p>
+                    <p class="text-muted">Disponíveis: {{ available_drivers }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quilometragem -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-road me-2"></i>Quilometragem</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text display-4">
+                        {% if total_km_this_month is defined and total_km_this_month is not none %}
+                            {{ total_km_this_month|round(1) }}
+                        {% else %}
+                            0.0
+                        {% endif %}
+                    </p>
+                    <p class="text-muted">Quilômetros no mês</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Valor Total -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Valor Total</h5>
+                </div>
+                <div class="card-body text-center">
+                    <p class="card-text display-4">
+                        {% if total_amount_this_month is defined and total_amount_this_month is not none %}
+                            R$ {{ total_amount_this_month|round(2) }}
+                        {% else %}
+                            R$ 0.00
+                        {% endif %}
+                    </p>
+                    <p class="text-muted">Faturamento no mês</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas de Viagens -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Viagens do Mês</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h2 class="display-4">{{ trips_this_month }}</h2>
+                            <p class="text-muted">Total de Viagens</p>
+                        </div>
+                        <div class="col-6">
+                            <h2 class="display-4">{{ completed_trips_this_month }}</h2>
+                            <p class="text-muted">Viagens Completadas</p>
+                        </div>
+                    </div>
+                    <div class="progress mt-3">
+                        {% if trips_this_month > 0 %}
+                            {% set completion_rate = (completed_trips_this_month / trips_this_month) * 100 %}
+                        {% else %}
+                            {% set completion_rate = 0 %}
+                        {% endif %}
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ completion_rate }}%;" aria-valuenow="{{ completion_rate }}" aria-valuemin="0" aria-valuemax="100">{{ completion_rate|round }}%</div>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Mês atual: {{ current_month }}</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-building me-2"></i>Departamentos Mais Ativos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Departamento</th>
+                                    <th class="text-end">Viagens</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for dept in top_departments %}
+                                <tr>
+                                    <td>{{ dept[0] }}</td>
+                                    <td class="text-end">{{ dept[1] }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Nenhum departamento com viagens no período.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="{{ url_for('reports.billing') }}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>Ver Relatório Completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Veículos e Motoristas Mais Utilizados -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-car me-2"></i>Veículos Mais Utilizados</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Placa</th>
+                                    <th class="text-end">Viagens</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for vehicle in top_vehicles %}
+                                <tr>
+                                    <td>{{ vehicle[0] }}</td>
+                                    <td class="text-end">{{ vehicle[1] }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Nenhum veículo utilizado no período.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-user-tie me-2"></i>Motoristas Mais Ativos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Motorista</th>
+                                    <th class="text-end">Viagens</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for driver in top_drivers %}
+                                <tr>
+                                    <td>{{ driver[0] }}</td>
+                                    <td class="text-end">{{ driver[1] }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Nenhum motorista com viagens no período.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

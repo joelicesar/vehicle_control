@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="mt-5 mb-4">
+                <h1 class="display-4">Controle de Veículos</h1>
+                <p class="lead">Sistema de gerenciamento de veículos corporativos</p>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2>Bem-vindo ao Sistema de Controle de Veículos</h2>
+                    <p class="mb-4">
+                        Este sistema permite gerenciar a frota de veículos da empresa, registrar viagens, 
+                        agendar o uso de veículos e gerar relatórios de cobrança por departamento.
+                    </p>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-person-badge"></i> Almoxarifado</h5>
+                                    <p class="card-text">Registro de saídas e chegadas de veículos, controle da frota e agendamentos.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-graph-up"></i> Gestor</h5>
+                                    <p class="card-text">Relatórios de cobrança, estatísticas de uso e gerenciamento de agendamentos.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Entrar no Sistema
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>

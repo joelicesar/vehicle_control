@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% extends "base.html" %}
+
+{% block title %}Erro Interno do Servidor{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-1 text-danger">500</h1>
+    <h2 class="mb-4">Erro Interno do Servidor</h2>
+    <p class="lead">Ocorreu um erro inesperado no servidor. Nossa equipe técnica foi notificada.</p>
+    <p>Por favor, tente novamente mais tarde ou entre em contato com o suporte se o problema persistir.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary mt-3">
+        <i class="bi bi-house"></i> Voltar para a Página Inicial
+    </a>
+</div>
+{% endblock %}
+</title>
+</head>
+<body>
+
+</body>
+</html>
